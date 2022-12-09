@@ -1,2 +1,14 @@
-# English-Hindi CSV Dictionary
-A free-use simple text file representing an English to Hindi dictionary. This file was compiled from various sources programmatically for the purpose of facilitating rapid terminal-based search.  
+# English-Hindi Translator App
+A Shiny App performing simple translations from English to Hindi.
+
+The original csv file was compiled from various sources programmatically for the purpose of facilitating rapid terminal-based search.  
+
+## To run the Shiny App:
+1) Open Translator_App.proj & Translator_App.R
+
+2) Run the following command in your R console:
+```r
+renv::restore()
+```
+
+3) Click Run App
