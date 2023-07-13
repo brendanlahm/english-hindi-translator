@@ -20,12 +20,38 @@ your = 'your'
 return <- as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", your, "'"), "LIMIT 5")))
 paste(unlist(return), collapse=' / ')
 
-h <- as.list(dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'lin'"))
+h <- as.list(dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'I'"))
 h <- paste(unlist(h), collapse=' / ')
 
 if(h == ''){print(as.list(dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'lin%'")))
   
   }
+
+############################# Translate a Sentence
+entry <- "I am happy"
+entry <- strsplit(entry, " ")
+enoun <- unlist(entry)[1]
+everb <- unlist(entry)[2]
+eadjective <- unlist(entry)[3]
+
+hnoun <- as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'"))))
+hnoun <- unlist(hnoun)
+hnoun
+
+hverb <- as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))
+hverb <- unlist(hverb)
+hverb
+
+hadjective <- as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))
+hadjective <- unlist(hadjective)
+hadjective
+
+paste(hnoun[length(hnoun)], hadjective[7], hverb[3])
+
+
+
+
+
 
 
 
