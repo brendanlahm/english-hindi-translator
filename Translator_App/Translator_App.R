@@ -10,7 +10,7 @@ hindi_db <- dbConnect(RSQLite::SQLite(), "../db/hindi_english.db")
 
 ui <- fluidPage(
 
-    titlePanel("English -> Hindi"),
+    titlePanel("English -> हिन्दी (Hindi)"),
 
     sidebarLayout(
         sidebarPanel(

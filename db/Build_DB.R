@@ -18,6 +18,10 @@ dict$hword <- str_replace_all(dict$hword, "[:space:]{2}", " ")
 ############################# Remove duplicate rows
 dict <- unique(dict[,1:3])
 
+############################# Add translation for sadness
+sadness <- data.frame("sadness", "\u095a\u092e", "Noun")
+colnames(sadness) <- c("eword", "hword", "egrammar")
+dict <- rbind(dict[1:104806,], sadness, dict[104807:nrow(dict),])
 
 ########## Establish connection & write
 hindi_db <- dbConnect(RSQLite::SQLite(), "../db/hindi_english.db")
