@@ -1,5 +1,5 @@
 # English-Hindi Translator App
-A Shiny App performing simple translations from English to Hindi.
+A Shiny App performing simple translations from English to Hindi (and Hindi to English).
 
 The original csv file was compiled from various sources programmatically for the purpose of facilitating rapid terminal-based search.  
 
