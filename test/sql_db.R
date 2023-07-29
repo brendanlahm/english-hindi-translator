@@ -17,15 +17,17 @@ dbGetQuery(hindi_db, paste("SELECT * FROM dict WHERE hword LIKE '\u092a\u093e\u0
 
 ############################# For the App
 your = 'your'
-return <- as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", your, "'"), "LIMIT 5")))
+return <- dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", your, "'"), "LIMIT 5"))
 paste(unlist(return), collapse=' / ')
 
-h <- as.list(dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'I'"))
+h <- dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'I'")
 h <- paste(unlist(h), collapse=' / ')
 
-if(h == ''){print(as.list(dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'lin%'")))
+if(h == ''){print(dbGetQuery(hindi_db, "SELECT hword FROM dict WHERE eword LIKE 'lin%'"))
   
   }
+
+g <- dbGetQuery(hindi_db, "SELECT egrammar FROM dict WHERE eword LIKE 'He'")
 
 ############################# Translate a Sentence
 entry <- "He is short"
@@ -34,35 +36,59 @@ enoun <- unlist(entry)[1]
 everb <- unlist(entry)[2]
 eadjective <- unlist(entry)[3]
 
-hnoun <- unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'")))))
+hnoun <- unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'"))))
 hnoun
 
-hverb <- unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'")))))
+hverb <- unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))
 hverb
 
-hadjective <- unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'")))))
+hadjective <- unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))
 hadjective
 
-#paste(hnoun[length(hnoun)], hadjective[7], hverb[3])
-#paste(hnoun[length(hnoun)], hadjective[7], hverb[1])
 paste(hnoun[1], hadjective[1], hverb[1])
+
+############################# Determine Grammar
+entry <- "He is"
+entry_unlist <- unlist(strsplit(entry, " "))
+
+egrammar <- list()
+for (a in seq(entry_unlist)) {
+  
+  egrammar[[a]] <- dbGetQuery(hindi_db, paste("SELECT egrammar FROM dict WHERE eword LIKE", paste0("'", entry_unlist[a], "'")))
+  egrammar[[a]] <- egrammar[[a]][["egrammar"]][1]
+  
+}
+
+enoun <- entry_unlist[which(egrammar == "Noun"|egrammar == "Pronoun")]
+eadjective <- entry_unlist[which(egrammar == "Adjective")]
+everb <- entry_unlist[which(egrammar == "Verb")]
+
 
 ############################# W/ Class
 setClass("sentence", slots = list(h_noun = 'character', h_adjective = 'character', h_verb = 'character'))
 
 sentence <- new("sentence", 
-                h_noun = unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'")))))[1],
-                h_verb = unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'")))))[1],
-                h_adjective = unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'")))))[1]
+                h_noun = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'"))))[1],
+                h_verb = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))[1],
+                h_adjective = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))[1]
                 )
 
-setMethod("show", "sentence", function(object) {
-  
-  cat(sentence@h_noun, sentence@h_adjective, sentence@h_verb)
-  
-})
+paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " ")
 
-sentence
+str_remove(paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " "), "NA ")
+
+# setMethod("show", "sentence", function(object) {
+#   
+#   cat(sentence@h_noun, sentence@h_adjective, sentence@h_verb)
+#   
+# })
+# 
+# sentence
+
+
+
+
+
 
 
 

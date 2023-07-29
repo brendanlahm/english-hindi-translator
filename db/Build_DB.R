@@ -18,15 +18,24 @@ dict$hword <- str_replace_all(dict$hword, "[:space:]{2}", " ")
 ############################# Remove duplicate rows
 dict <- unique(dict[,1:3])
 
+############################# Remove empty rows
+dict <- dict[-c(1:2),]
+
+############################# Correcting Grammar
+dict[110479, 3] <- "Adjective"
+
 ############################# Add translation for 'sadness'
 sadness <- data.frame("sadness", "\u095a\u092e", "Noun")
 colnames(sadness) <- c("eword", "hword", "egrammar")
-dict <- rbind(dict[1:104806,], sadness, dict[104807:nrow(dict),])
+dict <- rbind(dict[1:104804,], sadness, dict[104805:nrow(dict),])
 
 ############################# Add translation for 'is'
 is <- data.frame("is", "\u0939\u0947", "Verb")
 colnames(is) <- c("eword", "hword", "egrammar")
-dict <- rbind(dict[1:64770,], is, dict[64771:nrow(dict),])
+dict <- rbind(dict[1:64768,], is, dict[64770:nrow(dict),])
+
+############################# Correct translation for 'I'
+dict <- rbind(dict[1:59051,], dict[59058,], dict[59053:59057,], dict[59059:nrow(dict),])
 
 ########## Establish connection & write
 hindi_db <- dbConnect(RSQLite::SQLite(), "../db/hindi_english.db")
