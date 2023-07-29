@@ -18,7 +18,7 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
             textInput("input_word", label=NULL
-                        )
+                        ),
         ),
 
         mainPanel(
@@ -26,7 +26,20 @@ ui <- fluidPage(
         )
     ),
     
+    sidebarLayout(
+      sidebarPanel(
+            textInput("input_sentence", label = "Translate a Sentence", value = "He is short")
+    ),
+    
+        mainPanel(
+          uiOutput("output_sentence")
+        )
+    ),
+    
+    
     tags$head(tags$style("#output_word{font-size: 20px;
+                                 }",
+                         "#output_sentence{font-size: 20px;
                                  }"))
 )
 
@@ -40,6 +53,13 @@ server <- function(input, output, session=session) {
     
   })
   
+  input_sentence <- reactive({
+    
+    input_sentence1 <- input$input_sentence
+    input_sentence1
+    
+  })
+  
     observeEvent(input$input_word, {
       
       isolate({
@@ -49,25 +69,53 @@ server <- function(input, output, session=session) {
       })
       
     })
+    
+    observeEvent(input$input_sentence, {
+      
+      isolate({
+        
+        print(input_sentence())
+        
+      })
+      
+    })
   
   output$output_word <- renderUI({
     
-    # SQL Statement
+    # SQL Statement for a single word
     
     if(input$switch == 1) {
     
       answer <- as.list(dbGetQuery(hindi_db, paste("SELECT eword FROM dict WHERE hword LIKE", paste0("'", input_word(), "'"))))
       paste(unlist(answer), collapse=' / ')
       
-    }
-      
-    else {
+    } else {
       
       answer <- as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", input_word(), "'"))))
       paste(unlist(answer), collapse=' / ')
     
     }
     
+  })
+  
+  ##################################### Translating a Sentence
+  output$output_sentence <- renderUI({
+      
+    entry <- strsplit(input_sentence(), " ")
+    enoun <- unlist(entry)[1]
+    everb <- unlist(entry)[2]
+    eadjective <- unlist(entry)[3]
+    
+    setClass("sentence", slots = list(h_noun = 'character', h_adjective = 'character', h_verb = 'character'))
+
+    sentence <- new("sentence",
+                    h_noun = unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'")))))[1],
+                    h_verb = unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'")))))[1],
+                    h_adjective = unlist(as.list(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'")))))[1]
+    )
+    
+    paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " ")
+      
   })
   
 }
