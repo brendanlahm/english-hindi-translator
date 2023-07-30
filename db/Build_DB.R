@@ -33,7 +33,7 @@ sadness <- data.frame("sadness", "\u095a\u092e", "Noun")
 colnames(sadness) <- c("eword", "hword", "egrammar")
 dict <- rbind(dict[1:which(dict$eword == 'sadness')[1]-1,], sadness, dict[which(dict$eword == 'sadness'):nrow(dict),])
 
-############################# Add translation for 'is'
+############################# Correct translation for 'is'
 is <- data.frame("is", "\u0939\u0947", "Verb")
 colnames(is) <- c("eword", "hword", "egrammar")
 dict[which(dict$eword == 'is'),] <- is
@@ -43,6 +43,17 @@ dict <- rbind(dict[1:which(dict$eword == 'i')[1]-1,], dict[max(which(dict$eword 
 
 ############################# Correct translation for 'man'
 dict <- rbind(dict[1:which(dict$eword == 'man')[1]-1,], dict[which(dict$eword == 'man')[3],], dict[which(dict$eword == 'man')[4]:nrow(dict),])
+
+############################# Correct translation for 'woman'
+dict <- rbind(dict[1:which(dict$eword == 'woman')[1]-1,], dict[which(dict$eword == 'woman')[4],], dict[which(dict$eword == 'woman')[2],], dict[(which(dict$eword == 'woman')[6]):nrow(dict),])
+
+############################# Correct translation for 'cat'
+dict <- dict[-c(which(dict$eword == 'cat')[1:5]),]
+
+############################# Correct translation for 'nose'
+dict[which(dict$eword == 'nose')[1], 1] <- 'curiosity'
+dict[which(dict$eword == 'nose')[1], 1] <- 'to defeat'
+dict <- rbind(dict[1:which(dict$eword == 'nose')[1]-1,], dict[which(dict$eword == 'nose')[5],], dict[(which(dict$eword == 'nose')[1]):(which(dict$eword == 'nose')[4]),], dict[(which(dict$eword == 'nose')[6]):nrow(dict),])
 
 ########## Establish connection & write
 hindi_db <- dbConnect(RSQLite::SQLite(), "../db/hindi_english.db")
