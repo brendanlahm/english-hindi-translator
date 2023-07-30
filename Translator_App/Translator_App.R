@@ -1,5 +1,7 @@
-############ Translator App: English -> Hindi
-# Accepts a single English word and returns all Hindi matches in Devanagari script
+############################################# Translator App: English -> Hindi
+### Translates a single word between English & Hindi
+## Hindi entries must be in Devanagari script
+# Can translate some English sentences into Hindi
 
 library(shiny)
 library(shinyWidgets)
@@ -29,7 +31,7 @@ ui <- fluidPage(
     
     sidebarLayout(
       sidebarPanel(
-            textInput("input_sentence", label = "Translate a Sentence", value = "He is short")
+            textInput("input_sentence", label = "Translate a Sentence", value = "He is a short man")
     ),
     
         mainPanel(
@@ -112,19 +114,24 @@ server <- function(input, output, session=session) {
       
     }
     
-    enoun <- entry[which(egrammar == "Noun"|egrammar == "Pronoun")]
+    enoun1 <- entry[which(egrammar == "Noun"|egrammar == "Pronoun")][1]
+    enoun2 <- entry[which(egrammar == "Noun"|egrammar == "Pronoun")][2]
+    earticle <- entry[which(egrammar == "Article"|egrammar == "Determiner")]
     eadjective <- entry[which(egrammar == "Adjective")]
     everb <- entry[which(egrammar == "Verb")]
     
-    setClass("sentence", slots = list(h_noun = 'character', h_adjective = 'character', h_verb = 'character'))
+    ########### Set a class for constructing a sentence
+    setClass("sentence", slots = list(h_noun1 = 'character', h_noun2 = 'character', h_article = 'character', h_adjective = 'character', h_verb = 'character'))
 
-    sentence <- new("sentence",
-                    h_noun = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'"))))[1],
-                    h_verb = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))[1],
-                    h_adjective = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))[1]
+    sentence <- new("sentence", 
+                    h_noun1 = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun1, "'"))))[1],
+                    h_noun2 = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun2, "'"))))[1],
+                    h_article = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", earticle, "'"))))[1],
+                    h_adjective = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))[1],
+                    h_verb = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))[1]
     )
     
-    str_remove(paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " "), "NA ")
+    str_remove_all(paste(sentence@h_noun1, sentence@h_article, sentence@h_adjective, sentence@h_noun2, sentence@h_verb, sep = " "), " NA|NA ")
       
   })
   

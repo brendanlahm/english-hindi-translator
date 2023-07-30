@@ -48,7 +48,7 @@ hadjective
 paste(hnoun[1], hadjective[1], hverb[1])
 
 ############################# Determine Grammar
-entry <- "He is"
+entry <- "He is the short man"
 entry_unlist <- unlist(strsplit(entry, " "))
 
 egrammar <- list()
@@ -59,23 +59,26 @@ for (a in seq(entry_unlist)) {
   
 }
 
-enoun <- entry_unlist[which(egrammar == "Noun"|egrammar == "Pronoun")]
+enoun1 <- entry_unlist[which(egrammar == "Noun"|egrammar == "Pronoun")][1]
+enoun2 <- entry_unlist[which(egrammar == "Noun"|egrammar == "Pronoun")][2]
+earticle <- entry_unlist[which(egrammar == "Article"|egrammar == "Determiner")]
 eadjective <- entry_unlist[which(egrammar == "Adjective")]
 everb <- entry_unlist[which(egrammar == "Verb")]
 
-
 ############################# W/ Class
-setClass("sentence", slots = list(h_noun = 'character', h_adjective = 'character', h_verb = 'character'))
+setClass("sentence", slots = list(h_noun1 = 'character', h_noun2 = 'character', h_article = 'character', h_adjective = 'character', h_verb = 'character'))
 
 sentence <- new("sentence", 
-                h_noun = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun, "'"))))[1],
-                h_verb = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))[1],
-                h_adjective = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))[1]
+                h_noun1 = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun1, "'"))))[1],
+                h_noun2 = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", enoun2, "'"))))[1],
+                h_article = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", earticle, "'"))))[1],
+                h_adjective = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", eadjective, "'"))))[1],
+                h_verb = unlist(dbGetQuery(hindi_db, paste("SELECT hword FROM dict WHERE eword LIKE", paste0("'", everb, "'"))))[1]
                 )
 
-paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " ")
+#paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " ")
 
-str_remove(paste(sentence@h_noun, sentence@h_adjective, sentence@h_verb, sep = " "), "NA ")
+str_remove_all(paste(sentence@h_noun1, sentence@h_article, sentence@h_adjective, sentence@h_noun2, sentence@h_verb, sep = " "), " NA|NA ")
 
 # setMethod("show", "sentence", function(object) {
 #   

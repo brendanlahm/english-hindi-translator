@@ -6,8 +6,6 @@ library(DBI)
 dict <- read.csv('../English-Hindi Dictionary.csv')
 
 ########################################### Cleaning up the data table
-dict$egrammar[15394] <- "Noun"
-dict$egrammar[65232] <- "Adjective"
 dict$egrammar <- gsub('Adjective\"', replacement='Adjective', x=dict$egrammar)
 substr(dict$egrammar, 1, 1) <- str_to_upper(substr(dict$egrammar, 1, 1))
 dict$eword <- str_replace_all(dict$eword, "^[:space:]", "")
@@ -22,20 +20,29 @@ dict <- unique(dict[,1:3])
 dict <- dict[-c(1:2),]
 
 ############################# Correcting Grammar
-dict[110479, 3] <- "Adjective"
+dict[which(dict$eword == 'black francolin'), 3] <- "Noun"
+dict[which(dict$eword == 'haughty'), 3] <- "Adjective"
+dict[which(dict$eword == 'short'), 3][1] <- "Adjective"
+
+############################# Fixing 'the'
+dict[which(dict$eword == 'the'), 1][1] <- "the best"
+dict <- dict[-c(which(dict$eword == 'the')),]
 
 ############################# Add translation for 'sadness'
 sadness <- data.frame("sadness", "\u095a\u092e", "Noun")
 colnames(sadness) <- c("eword", "hword", "egrammar")
-dict <- rbind(dict[1:104804,], sadness, dict[104805:nrow(dict),])
+dict <- rbind(dict[1:which(dict$eword == 'sadness')[1]-1,], sadness, dict[which(dict$eword == 'sadness'):nrow(dict),])
 
 ############################# Add translation for 'is'
 is <- data.frame("is", "\u0939\u0947", "Verb")
 colnames(is) <- c("eword", "hword", "egrammar")
-dict <- rbind(dict[1:64768,], is, dict[64770:nrow(dict),])
+dict[which(dict$eword == 'is'),] <- is
 
 ############################# Correct translation for 'I'
-dict <- rbind(dict[1:59051,], dict[59058,], dict[59053:59057,], dict[59059:nrow(dict),])
+dict <- rbind(dict[1:which(dict$eword == 'i')[1]-1,], dict[max(which(dict$eword == 'i')),], dict[(which(dict$eword == 'i')[1]+1):(which(dict$eword == 'i')[1]+5),], dict[(max(which(dict$eword == 'i'))+1):nrow(dict),])
+
+############################# Correct translation for 'man'
+dict <- rbind(dict[1:which(dict$eword == 'man')[1]-1,], dict[which(dict$eword == 'man')[3],], dict[which(dict$eword == 'man')[4]:nrow(dict),])
 
 ########## Establish connection & write
 hindi_db <- dbConnect(RSQLite::SQLite(), "../db/hindi_english.db")
