@@ -38,6 +38,14 @@ is <- data.frame("is", "\u0939\u0947", "Verb")
 colnames(is) <- c("eword", "hword", "egrammar")
 dict[which(dict$eword == 'is'),] <- is
 
+############################# Add translation for 'are'
+are <- data.frame("are", "\u0939\u0948\u0902", "Verb")
+colnames(are) <- c("eword", "hword", "egrammar")
+dict <- rbind(dict[1:which(dict$eword == 'are')[1]-1,], are, dict[(which(dict$eword == 'are')[1]):nrow(dict),])
+
+############################# Fixing 'you'
+dict <- rbind(dict[1:which(dict$eword == 'you')[1]-1,], dict[which(dict$eword == 'you')[1]+1,], dict[(which(dict$eword == 'you')[1]),], dict[(which(dict$eword == 'you')[1]+2):nrow(dict),])
+
 ############################# Correct translation for 'I'
 dict <- rbind(dict[1:which(dict$eword == 'i')[1]-1,], dict[max(which(dict$eword == 'i')),], dict[(which(dict$eword == 'i')[1]+1):(which(dict$eword == 'i')[1]+5),], dict[(max(which(dict$eword == 'i'))+1):nrow(dict),])
 
